@@ -1,0 +1,42 @@
+[
+  {
+    "id": "1",
+    "name": "Enantra Energy Drink",
+    "discount": "15",
+    "description": "A powerful Combination of Tastes & Energy",
+    "color": "#FDE8BA",
+    "price": "142",
+    "discountPrice": "130",
+    "imageUri": "box.png"
+  },
+  {
+    "id": "2",
+    "name": "Enantra Energy Drink",
+    "discount": "15",
+    "description": "A powerful Combination of Tastes & Energy",
+    "price": "142",
+    "discountPrice": "130",
+    "color": "#DFECCF",
+    "imageUri": "box.png"
+  },
+  {
+    "id": "3",
+    "name": "Enantra Energy Drink",
+    "discount": "15",
+    "description": "A powerful Combination of Tastes & Energy",
+    "price": "142",
+    "discountPrice": "130",
+    "color": "#FDE8BA",
+    "imageUri": "box.png"
+  },
+  {
+    "id": "4",
+    "name": "Enantra Energy Drink",
+    "discount": "15",
+    "price": "142",
+    "discountPrice": "130",
+    "description": "A powerful Combination of Tastes & Energy",
+    "color": "#DFECCF",
+    "imageUri": "box.png"
+  }
+]

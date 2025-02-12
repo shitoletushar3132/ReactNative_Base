@@ -1,0 +1,34 @@
+[
+  {
+    "id": 1,
+    "categoryName": "All"
+  },
+  {
+    "id": 2,
+    "categoryName": "Booster"
+  },
+  {
+    "id": 3,
+    "categoryName": "Energy Drink"
+  },
+  {
+    "id": 4,
+    "categoryName": "Protein Powder"
+  },
+  {
+    "id": 5,
+    "categoryName": "All"
+  },
+  {
+    "id": 6,
+    "categoryName": "Booster"
+  },
+  {
+    "id": 7,
+    "categoryName": "Energy Drink"
+  },
+  {
+    "id": 8,
+    "categoryName": "Protein Powder"
+  }
+]
