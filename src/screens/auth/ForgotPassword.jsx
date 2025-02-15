@@ -85,7 +85,7 @@ const ForgotPassword = ({navigation}) => {
                     )
                   }
                   onPress={handleFogotPassword}
-                  bgColor="#F67C3B"
+                  bgColor="#DD5411"
                   textColor="#fff"
                 />
               </View>

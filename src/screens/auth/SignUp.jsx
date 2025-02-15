@@ -17,6 +17,8 @@ import validateSignUpForm from '../../utils/Validation/auth/signUp';
 import NavigateButton from '../../components/NavigateButton';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Fontisto from 'react-native-vector-icons/Fontisto';
+import {signUpRequest} from '../../requests/auth/authRequest';
+import {Snackbar} from 'react-native-paper';
 
 const SignUp = ({navigation}) => {
   const screenWidth = Dimensions.get('window').width;
@@ -27,22 +29,46 @@ const SignUp = ({navigation}) => {
     password: '',
   });
   const [loading, setLoading] = useState(false);
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [snackMessage, setSnackMessage] = useState('');
 
   const handleInputChange = (field, value) => {
     setFormData({...formData, [field]: value});
   };
 
-  const handleSignUp = () => {
-    if (validateSignUpForm(formData)) {
+  const handleSignUp = async () => {
+    if (validateSignUpForm(formData, setSnackMessage)) {
       setLoading(true);
-      setTimeout(() => {
-        console.log('Form Data:', formData);
+
+      try {
+        const res = await signUpRequest(
+          formData.name,
+          formData.email,
+          formData.phone,
+          formData.password,
+        );
+
+        if (res?.data?.data) {
+          setSnackbarVisible(true);
+          setSnackMessage('Sign Up Successfully!!');
+          setInterval(() => {
+            navigation.navigate('SignIn');
+          }, 1500);
+        } else {
+          setSnackbarVisible(true);
+          setSnackMessage('User already exists');
+        }
+      } catch (error) {
+        const errorMessage = error.message || 'Sign-up failed';
+        setSnackbarVisible(true);
+        setSnackMessage(errorMessage);
+        console.log(error.response?.data?.message || errorMessage);
+      } finally {
         setLoading(false);
-      }, 3000);
+      }
     } else {
-      console.log('err');
+      setSnackbarVisible(true);
     }
-    // Add your login logic here
   };
 
   return (
@@ -54,7 +80,7 @@ const SignUp = ({navigation}) => {
           <ScrollView
             contentContainerStyle={{flexGrow: 1}}
             keyboardShouldPersistTaps="handled">
-            <View className="h-[381">
+            <View>
               <View>
                 <Image
                   source={require('../../assets/auth/MainSignIn.png')}
@@ -73,28 +99,31 @@ const SignUp = ({navigation}) => {
                     iconName="user-o"
                     libName={FontAwesome}
                     onChangeText={text => handleInputChange('name', text)}
-                    border="#F67C3B"
+                    border="#DD5411"
                   />
                   <AuthInput
                     placeholder="Email"
                     iconName="email"
                     libName={Fontisto}
                     onChangeText={text => handleInputChange('email', text)}
-                    border="#F67C3B"
+                    border="#DD5411"
+                    focusBorder="#DB550C"
                   />
                   <AuthInput
                     placeholder="Phone Number"
                     iconName="phone"
                     libName={FontAwesome}
                     onChangeText={text => handleInputChange('phone', text)}
-                    border="#F67C3B"
+                    border="#DD5411"
+                    focusBorder="#DB550C"
                   />
                   <AuthInput
                     placeholder="Passwords"
                     iconName="lock"
                     libName={FontAwesome}
                     onChangeText={text => handleInputChange('password', text)}
-                    border="#F67C3B"
+                    border="#DD5411"
+                    focusBorder="#DB550C"
                   />
 
                   <AuthButton
@@ -105,7 +134,7 @@ const SignUp = ({navigation}) => {
                         'CREATE AN ACCOUNT'
                       )
                     }
-                    bgColor="#F67C3B"
+                    bgColor="#DD5411"
                     textColor="#fff"
                     onPress={handleSignUp}
                   />
@@ -124,6 +153,16 @@ const SignUp = ({navigation}) => {
                 </View>
               </View>
             </View>
+            <Snackbar
+              visible={snackbarVisible}
+              onDismiss={() => setSnackbarVisible(false)}
+              action={{
+                label: 'OK',
+                onPress: () => setSnackbarVisible(false),
+              }}
+              style={{marginBottom: 10}}>
+              <Text className="text-red-500">{snackMessage}</Text>
+            </Snackbar>
           </ScrollView>
         </KeyboardAvoidingView>
       </TouchableWithoutFeedback>

@@ -1,0 +1,32 @@
+[
+  {
+    "street1": "123 Maple Street",
+    "street2": "Apt 4B",
+    "city": "New York",
+    "pinCode": "10001"
+  },
+  {
+    "street1": "456 Oak Avenue",
+    "street2": "",
+    "city": "Los Angeles",
+    "pinCode": "90012"
+  },
+  {
+    "street1": "789 Pine Road",
+    "street2": "Suite 300",
+    "city": "Chicago",
+    "pinCode": "60610"
+  },
+  {
+    "street1": "101 Elm Boulevard",
+    "street2": "Floor 2",
+    "city": "Houston",
+    "pinCode": "77002"
+  },
+  {
+    "street1": "202 Birch Lane",
+    "street2": "Building A",
+    "city": "San Francisco",
+    "pinCode": "94105"
+  }
+]

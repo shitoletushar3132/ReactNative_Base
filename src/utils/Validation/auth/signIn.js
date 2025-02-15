@@ -1,18 +1,17 @@
-const validateFormSignIn = formData => {
-  const {email, password} = formData;
+const validateFormSignIn = (formData, setSnackMessage) => {
+  const {phone, password} = formData;
 
-  if (!email.trim() || !password.trim()) {
-    alert('Please fill in all fields.');
+  if (!phone.trim() || !password.trim()) {
+    setSnackMessage('Please fill in all fields.');
     return false;
   }
-
-  if (!/\S+@\S+\.\S+/.test(email)) {
-    alert('Please enter a valid email address.');
+  if (!/^\d{10}$/.test(phone)) {
+    setSnackMessage('Phone number must be exactly 10 digits.');
     return false;
   }
 
   if (password.length < 6) {
-    alert('Password must be at least 6 characters long.');
+    setSnackMessage('Password must be at least 6 characters long.');
     return false;
   }
 

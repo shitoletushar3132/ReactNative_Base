@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
   View,
   KeyboardAvoidingView,
@@ -7,80 +7,211 @@ import {
   ScrollView,
   Platform,
   SafeAreaView,
-  Image,
-  Dimensions,
+  Text,
 } from 'react-native';
-import CategroyList from '../../utils/data/category.json';
-import Products from '../../utils/data/home.json';
 import CategoryBadge from '../../components/home/CategoryBadge';
 import SectionTitle from '../../components/home/SectionTitle';
 import HorizontalScrollView from '../../components/home/HorizontalScrollView';
 import ProductList from '../../components/home/ProductList';
 import MainHeader from '../../components/home/Header/MainHeader';
+import {AppContext} from '../../contextProvider/AppContext';
+import {getUserData} from '../../requests/auth/authRequest';
+import {
+  getAllBanners,
+  getAllCategory,
+  getAllProducts,
+  getProductDetails,
+  getVideos,
+} from '../../requests/products/getProducts';
+import {ActivityIndicator} from 'react-native-paper';
+import VideoCard from '../../components/home/CardTypes/VideoCard';
+import AutoScrollBanner from '../../components/home/CardTypes/AutoScrollBanner';
+import {useNavigation} from '@react-navigation/native';
 
 const Home = () => {
+  const {
+    setUser,
+    refreshData,
+    categories,
+    setCategories,
+    banners,
+    setBanners,
+    products,
+    setProducts,
+    videos,
+    setVideos,
+  } = useContext(AppContext);
+
+  const navigation = useNavigation();
+
+  const [loading, setLoading] = useState(false);
+
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      const data = await getAllProducts(); // Assuming this API fetches products
+      setProducts(data.data.data.data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    } finally {
+      setLoading(false);
+      // Stop loading once data is fetched
+    }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const data = await getAllCategory();
+      setCategories(data.data.data.data);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+  };
+
+  const fetchBanners = async () => {
+    try {
+      const data = await getAllBanners();
+      setBanners(data.data.data);
+    } catch (error) {
+      console.error('Error fetching Banners:', error);
+    }
+  };
+
+  const fetchVideos = async () => {
+    try {
+      const data = await getVideos();
+      // const detail = await getProductDetails();
+      setVideos(data.data.data);
+    } catch (error) {
+      console.error('Error fetching Videos:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+    fetchProducts();
+    fetchBanners();
+    fetchVideos();
+  }, []);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const res = await getUserData();
+      setUser(res.data.data);
+    };
+    fetchUserData();
+  }, [refreshData]);
+
+  console.log(banners);
+  console.log(categories);
+  console.log(products);
+  console.log(videos);
+
   return (
     <SafeAreaView className="flex-1 bg-white">
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          className="flex-1">
-          <ScrollView
-            contentContainerStyle={{flexGrow: 1}}
-            keyboardShouldPersistTaps="handled">
+        <ScrollView
+          contentContainerStyle={{flexGrow: 1, minHeight: 100}}
+          keyboardShouldPersistTaps="handled">
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            className="flex-1">
             {/* Header Section */}
 
             <MainHeader />
-
             {/* Main Content Section */}
-            <View className="py-4">
-              {/* Horizontal Products */}
-              <HorizontalScrollView>
-                <ProductList products={Products} layout="horizontal" />
-              </HorizontalScrollView>
 
-              {/* Category Badges */}
-              <View className="my-7">
-                <HorizontalScrollView>
-                  {CategroyList.map(category => (
-                    <CategoryBadge
-                      key={category.id}
-                      category={category.categoryName}
-                    />
-                  ))}
-                </HorizontalScrollView>
-              </View>
-
-              {/* Top Products */}
-              <View className="py-4 px-5">
-                <SectionTitle
-                  title="Our All Products"
-                  onPressSeeAll={() => console.log('See all top products')}
+            {loading ? (
+              <View className="flex-1 justify-center items-center">
+                <ActivityIndicator
+                  animating={true}
+                  size="medium"
+                  color={'#DD5411'}
                 />
-                <ProductList products={Products} layout="vertical" />
               </View>
+            ) : (
+              <>
+                <AutoScrollBanner banners={banners} />
+                <View className="">
+                  {/* <HorizontalScrollView>
+                  <ProductList products={banners} layout="horizontal" />
+                </HorizontalScrollView> */}
 
-              {/* Second Horizontal Products */}
-              <View className="py-4 ">
-                <View className="px-5">
-                  <SectionTitle
-                    title="Top Products"
-                    onPressSeeAll={() => console.log('See all top products')}
-                  />
-                </View>
+                  {/* Category Badges */}
+                  <View className="my-5">
+                    <HorizontalScrollView>
+                      {categories?.map(category => (
+                        <CategoryBadge
+                          key={category._id}
+                          category={category.name}
+                        />
+                      ))}
+                    </HorizontalScrollView>
+                  </View>
 
-                <View className="mt-4">
-                  <HorizontalScrollView>
+                  {/* Top Products */}
+                  <View className="py-4 px-5 ">
+                    <View className="mb-5">
+                      <SectionTitle
+                        title="Our Top Products"
+                        onPressSeeAll={() => navigation.navigate('Shop')}
+                      />
+                    </View>
+
                     <ProductList
-                      products={Products}
-                      layout="horizontalSecond"
+                      products={products?.filter(product =>
+                        product.keyward.includes('Top Product'),
+                      )}
+                      layout="vertical"
                     />
-                  </HorizontalScrollView>
+                  </View>
+
+                  {/* Second Horizontal Products */}
+                  <View className=" px-5">
+                    <View className="my-4">
+                      <SectionTitle
+                        title="OUR VALUABLE PRODUCTS"
+                        onPressSeeAll={() => navigation.navigate('Shop')}
+                      />
+                    </View>
+
+                    <View className="mt-3">
+                      {/* <HorizontalScrollView>
+                    <ProductList
+                      products={products.filter(product =>
+                        product.keyward.includes('Valuable Product'),
+                      )}
+                      // products={Pro}
+                      // layout="horizontalSecond"
+                    />
+                  </HorizontalScrollView> */}
+
+                      <ProductList
+                        products={products.filter(product =>
+                          product.keyward.includes('Valuable Product'),
+                        )}
+                        layout="vertical"
+                      />
+                    </View>
+                  </View>
+
+                  <View className="py-4 px-5">
+                    <Text className="text-lg text-center font-bold">
+                      OUR VALUABLE CUSTOMER
+                    </Text>
+
+                    <View className="items-center">
+                      {videos.map(video => (
+                        <VideoCard video={video} key={video._id} />
+                      ))}
+                    </View>
+                  </View>
                 </View>
-              </View>
-            </View>
-          </ScrollView>
-        </KeyboardAvoidingView>
+              </>
+            )}
+          </KeyboardAvoidingView>
+        </ScrollView>
       </TouchableWithoutFeedback>
     </SafeAreaView>
   );

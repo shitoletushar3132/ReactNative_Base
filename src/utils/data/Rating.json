@@ -1,0 +1,37 @@
+[
+  {
+    "id": 1,
+    "avatar": "https://randomuser.me/api/portraits/men/1.jpg",
+    "name": "John Doe",
+    "review": "Amazing product! Really loved the quality and service.",
+    "rating": 5
+  },
+  {
+    "id": 2,
+    "avatar": "https://randomuser.me/api/portraits/women/2.jpg",
+    "name": "Sarah Smith",
+    "review": "Good quality, but delivery took longer than expected.",
+    "rating": 4
+  },
+  {
+    "id": 3,
+    "avatar": "https://randomuser.me/api/portraits/men/3.jpg",
+    "name": "Michael Brown",
+    "review": "Decent product, but could be better in terms of durability.",
+    "rating": 3
+  },
+  {
+    "id": 4,
+    "avatar": "https://randomuser.me/api/portraits/women/4.jpg",
+    "name": "Emily White",
+    "review": "Not satisfied! The product was damaged upon arrival.",
+    "rating": 2
+  },
+  {
+    "id": 5,
+    "avatar": "https://randomuser.me/api/portraits/men/5.jpg",
+    "name": "David Johnson",
+    "review": "Terrible experience. The product was different from what was shown.",
+    "rating": 1
+  }
+]

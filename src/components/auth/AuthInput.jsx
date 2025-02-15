@@ -5,6 +5,7 @@ import Fontisto from 'react-native-vector-icons/Fontisto';
 import Icon from '../Icon';
 
 const AuthInput = ({
+  value,
   placeholder,
   iconName,
   libName,
@@ -17,13 +18,14 @@ const AuthInput = ({
   const [isFocused, setIsFocused] = useState(false);
   return (
     <View
-      className={`flex-row items-center border h-[${height}px] rounded-lg px-3`}
+      className={`flex-row items-center border h-[${height}px] rounded-lg px-2`}
       style={{borderColor: isFocused ? focusBorder : border}}>
       <TextInput
+        value={value}
         placeholder={placeholder}
         placeholderTextColor="#A3A3A3"
         secureTextEntry={secureTextEntry}
-        className="flex-1 ml-2 text-black"
+        className="flex-1 text-black"
         onChangeText={onChangeText}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}

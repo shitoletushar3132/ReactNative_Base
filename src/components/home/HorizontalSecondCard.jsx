@@ -4,6 +4,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {useNavigation} from '@react-navigation/native';
 
 const HorizontalSecondCard = ({product}) => {
+  console.log(product);
   const {id, name, description, imageUri, price, discountPrice} = product;
   const navigation = useNavigation();
 
@@ -40,7 +41,7 @@ const HorizontalSecondCard = ({product}) => {
       <View className="flex-1 justify-between px-2">
         <View className="">
           <View className="flex-row justify-between">
-            <Text className="text-[#F32F23] font-bold text-lg">
+            <Text className="text-[#DD5411] font-bold text-lg">
               <FontAwesome name="rupee" size={14} /> {discountPrice}
             </Text>
             <Text className="text-gray-400 font-bold line-through text-lg">
@@ -52,7 +53,7 @@ const HorizontalSecondCard = ({product}) => {
           <Text className="text-xs text-center">{description}</Text>
         </View>
 
-        <TouchableOpacity className=" bg-orange-500 py-2 rounded-2xl mt-3">
+        <TouchableOpacity className=" bg-[#DD5411] py-2 rounded-2xl mt-3">
           <Text className="text-white font-bold text-center">Add To Cart</Text>
         </TouchableOpacity>
       </View>
