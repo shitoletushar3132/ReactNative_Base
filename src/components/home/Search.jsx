@@ -4,36 +4,36 @@ import {
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Keyboard,
-  ScrollView,
   Platform,
   SafeAreaView,
   TextInput,
   FlatList,
   TouchableOpacity,
+  Image,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
+import {getAllProducts} from '../../requests/products/getProducts';
+import {ImageUri} from '../../utils/constant';
 
-const Search = ({ navigation }) => {
+const Search = ({navigation}) => {
   const [query, setQuery] = useState('');
-  const [recentSearches, setRecentSearches] = useState(['Shoes', 'Mobile', 'Laptop']);
   const [searchResults, setSearchResults] = useState([]);
 
-  // Sample product data
-  const allProducts = [
-    { id: 1, name: 'iPhone 13' },
-    { id: 2, name: 'Nike Running Shoes' },
-    { id: 3, name: 'Dell Laptop' },
-    { id: 4, name: 'Samsung Galaxy S22' },
-  ];
-
-  const handleSearch = (text) => {
+  const handleSearch = async text => {
     setQuery(text);
-    if (text) {
-      const filteredResults = allProducts.filter((item) =>
-        item.name.toLowerCase().includes(text.toLowerCase())
-      );
-      setSearchResults(filteredResults);
+    if (text.trim().length > 0) {
+      try {
+        const searchResult = await getAllProducts(1, 15, '', text);
+        if (searchResult?.data?.data?.data) {
+          setSearchResults(searchResult.data.data.data); // Ensures the latest results are set
+        } else {
+          setSearchResults([]);
+        }
+      } catch (error) {
+        console.error('Search Error:', error);
+        setSearchResults([]);
+      }
     } else {
       setSearchResults([]);
     }
@@ -46,45 +46,72 @@ const Search = ({ navigation }) => {
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           className="flex-1">
           <View className="p-4">
-            {/* Header with Back Arrow */}
-            <View className="flex-row items-center mb-4">
-              <TouchableOpacity onPress={() => navigation.goBack()} className="p-2">
+            {/* Back Arrow & Search Bar in One Line */}
+            <View className="flex-row items-center space-x-2 border border-gray-300 rounded-full px-3 py-2 bg-gray-100">
+              <TouchableOpacity
+                onPress={() => navigation.goBack()}
+                className="p-1">
                 <Icon name="arrow-back" size={24} color="black" />
               </TouchableOpacity>
-              <Text className="text-xl font-bold text-black ml-2">Search</Text>
-            </View>
-
-            {/* Search Bar */}
-            <View className="flex-row items-center border border-gray-300 rounded-full p-2 bg-gray-100">
-              <Icon name="search" size={24} color="gray" />
               <TextInput
-                placeholder="Search for products, brands & more"
+                placeholder="Search for products, category..."
                 placeholderTextColor="gray"
-                className="flex-1 ml-2 text-black"
+                className="flex-1 text-base text-black"
                 value={query}
                 onChangeText={handleSearch}
               />
+              <Icon name="search" size={24} color="gray" />
             </View>
 
             {/* Recent Searches */}
-            {query.length === 0 && (
-              <View className="mt-4">
-                <Text className="text-lg font-bold text-gray-700">Recent Searches</Text>
-                {recentSearches.map((item, index) => (
-                  <TouchableOpacity key={index} onPress={() => handleSearch(item)}>
-                    <Text className="text-gray-500 mt-1">{item}</Text>
-                  </TouchableOpacity>
-                ))}
+            {/* {query.length === 0 && recentSearches.length > 0 && (
+              <View className="mt-6">
+                <Text className="text-lg font-bold text-gray-700">
+                  Recent Searches
+                </Text>
+                <View className="mt-2">
+                  {recentSearches.map((item, index) => (
+                    <TouchableOpacity
+                      key={index}
+                      onPress={() => handleSearch(item)}
+                      className="py-2">
+                      <Text className="text-base text-gray-500">{item}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </View>
+            )} */}
+
+            {/* Search Results */}
+
+            {query === '' && (
+              <View className="flex items-center mt-4">
+                <Text className="text-gray-500 text-lg">
+                  Please search something
+                </Text>
               </View>
             )}
 
-            {/* Search Results */}
             <FlatList
               data={searchResults}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={({ item }) => (
-                <TouchableOpacity className="p-3 border-b border-gray-200">
-                  <Text className="text-black">{item.name}</Text>
+              keyExtractor={(item, index) =>
+                item?._id?.toString() || index.toString()
+              }
+              keyboardShouldPersistTaps="handled"
+              renderItem={({item}) => (
+                <TouchableOpacity
+                  className="flex-row items-center p-4 border-b border-gray-200 space-x-3"
+                  onPress={() =>
+                    navigation.navigate('Details', {id: item._id})
+                  }>
+                  <Image
+                    source={{uri: `${ImageUri}/${item.images?.[0]}`}}
+                    className="w-14 h-14 rounded-lg mr-3"
+                    resizeMode="cover"
+                  />
+                  <Text className="text-base text-black flex-1">
+                    {item.title}
+                  </Text>
                 </TouchableOpacity>
               )}
             />

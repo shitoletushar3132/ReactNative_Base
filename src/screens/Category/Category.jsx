@@ -51,6 +51,7 @@ const Category = () => {
     setCurrentPage(prev => prev + 1);
     fetchCategory(currentPage + 1);
   };
+  const [numColumns, setNumColumns] = useState(2);
 
   const renderShimmer = () => (
     <View className="my-4 bg-white rounded-lg shadow-lg w-full justify-center items-center">
@@ -63,9 +64,9 @@ const Category = () => {
 
   return (
     <View className="flex-1 bg-white py-5">
-      <Text className="text-xl font-bold text-center text-[#ff8000] mb-3">
+      {/* <Text className="text-xl font-bold text-center text-[#ff8000] mb-3">
         OUR ALL PRODUCTS
-      </Text>
+      </Text> */}
 
       {loading ? (
         <FlatList
@@ -76,23 +77,30 @@ const Category = () => {
       ) : (
         <FlatList
           data={categories}
+          key={numColumns} // Force re-render when numColumns changes
           keyExtractor={item => item._id}
+          numColumns={numColumns} // Set to 2
+          columnWrapperStyle={
+            numColumns > 1
+              ? {justifyContent: 'space-between', paddingHorizontal: 10}
+              : {}
+          }
           renderItem={({item}) => (
             <TouchableOpacity
               onPress={() =>
                 navigation.navigate('CategoryFilter', {category: item.name})
               }
-              className="mb-4 p-3 bg-white rounded-lg shadow-lg w-full justify-center items-center"
+              className="mb-4 p-3 bg-white rounded-lg shadow-md flex-1 mx-1 justify-center items-center"
               style={{
                 shadowColor: '#000',
                 shadowOffset: {width: 0, height: 2},
                 shadowOpacity: 0.2,
                 shadowRadius: 4,
-                elevation: 5,
+                elevation: 3,
               }}>
               <Image
                 source={{uri: `${ImageUri}/${item.image}`}}
-                style={{width: 200, height: 120, borderRadius: 10}}
+                style={{width: 100, height: 120, borderRadius: 10}}
               />
               <Text className="text-center mt-2 font-bold text-lg">
                 {item.name}

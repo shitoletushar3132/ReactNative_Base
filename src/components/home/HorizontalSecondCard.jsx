@@ -2,10 +2,12 @@ import {View, Text, TouchableOpacity, Image} from 'react-native';
 import React from 'react';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {useNavigation} from '@react-navigation/native';
+import {ImageUri} from '../../utils/constant';
 
 const HorizontalSecondCard = ({product}) => {
   console.log(product);
-  const {id, name, description, imageUri, price, discountPrice} = product;
+  const {_id, title, subTitle, images, price, discountPrice, variant} = product;
+  const {unit, value, sellingPrice, mrp} = variant[0];
   const navigation = useNavigation();
 
   return (
@@ -22,35 +24,37 @@ const HorizontalSecondCard = ({product}) => {
         marginHorizontal: 10,
         margin: 4,
       }}
-      onPress={() => navigation.navigate('Details', {id})}>
+      onPress={() => navigation.navigate('Details', {id: _id})}>
       {/* Product Image */}
 
       <View
         className="relative items-center bg-gray-100 rounded-3xl"
         style={{width: 105}}>
         <Image
-          source={require('../../assets/Home/Products/box.png')}
+          source={{uri: `${ImageUri}/${images[0]}`}}
           className="w-24 h-24"
           resizeMode="contain"
         />
 
-        <Text className="text-gray-500 mt-2 text-xs">Quantity: {200} gm</Text>
+        <Text className="text-gray-500 mt-2 text-xs">
+          Quantity: {value} {unit}
+        </Text>
       </View>
 
       {/* Text & Details Section */}
       <View className="flex-1 justify-between px-2">
         <View className="">
           <View className="flex-row justify-between">
-            <Text className="text-[#DD5411] font-bold text-lg">
-              <FontAwesome name="rupee" size={14} /> {discountPrice}
+            <Text className="text-[#DD5411] font-bold ">
+              <FontAwesome name="rupee" size={14} /> {sellingPrice}
             </Text>
-            <Text className="text-gray-400 font-bold line-through text-lg">
-              <FontAwesome name="rupee" size={12} /> {price}
+            <Text className="text-gray-400 font-bold line-through ">
+              <FontAwesome name="rupee" size={12} /> {mrp}
             </Text>
           </View>
 
-          <Text className="text-sm font-bold">{name}</Text>
-          <Text className="text-xs text-center">{description}</Text>
+          <Text className="text-sm font-bold">{title}</Text>
+          <Text className="text-xs text-center">{subTitle}</Text>
         </View>
 
         <TouchableOpacity className=" bg-[#DD5411] py-2 rounded-2xl mt-3">

@@ -1,33 +1,40 @@
 import {View, Text, TouchableOpacity} from 'react-native';
 import React from 'react';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-const BottomAddress = () => {
+const BottomAddress = ({
+  address,
+  selectedId,
+  setSelectedAddress,
+  refRBSheet,
+}) => {
   return (
-    <View className="p-5">
-      <View className="mb-5">
-        <Text className="text-xl font-bold">Choose a delivery Address</Text>
-      </View>
-      <View className="">
-        <TouchableOpacity
-          className="flex-row items-center gap-x-2"
-          onPress={() => {}}>
-          <FontAwesome name="plus-circle" size={16} color={'#DD5411'} />
-          <Text className="text-lg font-bold text-[#DD5411]">
-            Add An Address
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      <View className="flex-row items-center p-3 border-2 border-sky-500 rounded-lg mt-4 gap-x-3">
+    <TouchableOpacity
+      className={`p-3 border-2 border-gray-300 rounded-lg mt-4 ${
+        selectedId == address.addressId && 'border-sky-500'
+      }`}
+      onPress={() => {
+        setSelectedAddress(address), refRBSheet?.current?.close();
+      }}>
+      <View className="flex-row items-start space-x-3">
         <MaterialIcons name="location-on" size={24} color={'gray'} />
-        <View>
-          <Text className="font-bold text-lg">Name:Demo</Text>
-          <Text>22, Demo....</Text>
+        <View className="flex-1">
+          <View className="flex-row items-center justify-between">
+            <Text className="text-lg font-bold text-gray-800">
+              {address.fullName}
+            </Text>
+            <Text className="font-bold text-gray-800">
+              Pincode: {address.pincode}
+            </Text>
+          </View>
+
+          <Text className="text-gray-700 flex-wrap">
+            Address: {address.streetName1}, {address.streetName2},{' '}
+            {address.city}, {address.state}, {address.pincode}
+          </Text>
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 

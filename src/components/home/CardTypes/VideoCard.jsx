@@ -1,39 +1,82 @@
-import {View, Text, TouchableOpacity, Image} from 'react-native';
-import React, {useCallback, useState} from 'react';
+import {View, Text, TouchableOpacity, Image, Linking} from 'react-native';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {ImageUri} from '../../../utils/constant';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import YoutubePlayer from 'react-native-youtube-iframe';
+import {AppContext} from '../../../contextProvider/AppContext';
+import {addToCart} from '../../../requests/cart/addCart';
+import {ActivityIndicator} from 'react-native-paper';
 
 const VideoCard = ({video}) => {
-  console.log(video);
-  const {product, url, fullName, about} = video;
-  const {title, subTitle, images, variant, catagory} = product;
-
-  const [playing, setPlaying] = useState(false);
-
-  const onStateChange = useCallback(state => {
-    if (state === 'ended') {
-      setPlaying(false);
-    }
-  }, []);
-
+  const {product, url, fullName, about, productId} = video;
+  const [addedCart, setAddedCart] = useState(false);
   const navigation = useNavigation();
+  const {setCartRefreshData, user} = useContext(AppContext);
+  const [loading, setLoading] = useState(false);
+  const {title, subTitle, quantity, images, variant, catagory} = product;
+  const {value, unit, sellingPrice, mrp, discount} = variant[0];
+
+  console.log(video);
+
+  const handleAddToCart = async () => {
+    try {
+      if (user) {
+        setLoading(true);
+        const res = await addToCart({
+          productId: productId,
+          productQuantity: `$${value} ${unit}`,
+          totalPrice: sellingPrice,
+          productTitle: title,
+          productImage: images[0],
+          productVariant: variant[0],
+          productCatagory: catagory,
+          navigation: navigation,
+        });
+        setCartRefreshData(prev => !prev);
+        setLoading(false);
+        setAddedCart(true);
+      } else {
+        navigation.navigate('Auth');
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    // Set interval
+    const interval = setInterval(() => {
+      setAddedCart(false);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [addedCart]);
+
   return (
     <TouchableOpacity
       className="p-4 mt-5 rounded-3xl bg-white shadow-lg border border-gray-200 items-center w-[85%]"
-      onPress={() => navigation.navigate('Details', {id})}>
+      onPress={() => navigation.navigate('Details', {id: productId})}>
       <View>
-        <YoutubePlayer
+        {/* <YoutubePlayer
           height={160}
           play={playing}
-          videoId={url} // This is your YouTube video ID
+          videoId={url} // Ensure url is only the video ID
           onChangeState={onStateChange}
-        />
+          onReady={() => console.log('Player is ready')}
+          webViewStyle={{opacity: 0.99}} // Fixes some rendering issues on Android
+        /> */}
+
+        <TouchableOpacity
+          style={{height: 160}}
+          className="items-center justify-center"
+          onPress={() =>
+            Linking.openURL(`https://www.youtube.com/watch?v=${url}`)
+          }>
+          <FontAwesome name="youtube-play" size={50} color="#FF0000" />
+        </TouchableOpacity>
       </View>
-
       {/* Product Name & Description */}
-
       <Text
         className="text-black  font-bold mt-1 w-full "
         numberOfLines={1}
@@ -48,9 +91,7 @@ const VideoCard = ({video}) => {
         style={{flexWrap: 'wrap'}}>
         {about}
       </Text>
-
       {/* Product Image */}
-
       <View className="flex-row w-full rounded-2xl items-center p-2">
         <Image
           source={{
@@ -73,10 +114,26 @@ const VideoCard = ({video}) => {
           )}
         </View>
       </View>
-
       {/* Add to Cart Button */}
-      <TouchableOpacity className="w-full bg-[#DD5411] py-2 rounded-2xl mt-3">
-        <Text className="text-white font-bold text-center">Add To Cart</Text>
+      <TouchableOpacity
+        className={`w-full ${
+          addedCart ? 'bg-green-500' : ` bg-[#ff8000]`
+        } py-2 rounded-2xl mt-3`}
+        onPress={() => handleAddToCart()}>
+        {loading ? (
+          <ActivityIndicator color="#fff" size={'small'} />
+        ) : addedCart ? (
+          <View className="flex-row justify-center items-center ">
+            {/* <AntDesign name="checkcircle" color={'white'} /> */}
+            <Text className="text-white font-bold text-center text-sm">
+              ADDED TO CART
+            </Text>
+          </View>
+        ) : (
+          <Text className="text-white font-bold text-center text-sm">
+            ADD TO CART
+          </Text>
+        )}
       </TouchableOpacity>
     </TouchableOpacity>
   );

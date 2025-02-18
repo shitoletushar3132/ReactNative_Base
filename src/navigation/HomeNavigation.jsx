@@ -12,6 +12,7 @@ import {AppContext} from '../contextProvider/AppContext';
 import {Alert} from 'react-native';
 import EditProfile from '../screens/Profile/EditProfile';
 import CategoryFilter from '../screens/Category/CategoryFilter';
+import OrderDetail from '../screens/Profile/OrderDetail';
 
 const Stack = createStackNavigator();
 
@@ -22,10 +23,10 @@ const HomeNavigation = () => {
     return user
       ? component
       : () => {
-          Alert.alert(
-            'Authentication Required',
-            'Please sign in to access this feature.',
-          );
+          // Alert.alert(
+          //   'Authentication Required',
+          //   'Please sign in to access this feature.',
+          // );
           return <AuthNavigation />;
         };
   };
@@ -40,7 +41,16 @@ const HomeNavigation = () => {
       <Stack.Screen name="Bill" component={requireAuth(BillSummary)} />
       <Stack.Screen name="Profile" component={requireAuth(Profile)} />
       <Stack.Screen name="Address" component={requireAuth(AddAddress)} />
-      <Stack.Screen name="OrderHistory" component={requireAuth(OrderHistoy)} />
+      <Stack.Screen
+        name="OrderHistory"
+        component={requireAuth(OrderHistoy)}
+        options={{headerShown: true, headerTitle: 'Order History'}}
+      />
+      <Stack.Screen
+        name="OrderDetail"
+        component={requireAuth(OrderDetail)}
+        options={{headerShown: true, headerTitle: 'Detail Order'}}
+      />
       <Stack.Screen
         name="EditProfile"
         component={requireAuth(EditProfile)}

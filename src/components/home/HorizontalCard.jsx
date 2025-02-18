@@ -11,7 +11,7 @@ const HorizontalCard = ({product}) => {
       source={{uri: `${ImageUri}/${product.image}`}}
       style={{
         width: width, // Full screen width
-        height: width * 0.4, // Adjust height to ensure proper visibility
+        height: width * 0.5, // Adjust height to ensure proper visibility
       }}
       resizeMode="stretch" // Ensures the full image is visible without cutting off
     />

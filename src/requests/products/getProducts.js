@@ -75,10 +75,23 @@ const getVideos = async (limit = 10) => {
   }
 };
 
-const getProductDetails = async () => {
+const getProductDetails = async ({id}) => {
+  try {
+    const res = await axiosInstance.get(`/api/v1/product/get/single/${id}`);
+    console.log(res);
+    return res;
+  } catch (error) {
+    console.log(error);
+    console.log(error.response);
+    console.error(error.response?.data?.message || 'Registration failed');
+    throw new Error(error.response?.data?.message || 'Registration failed');
+  }
+};
+
+const getReviews = async ({id, page = 1}) => {
   try {
     const res = await axiosInstance.get(
-      `/api/v1/product/674edbd7e88da25a8fe78544`,
+      `/api/v1/product/review/get/all/${id}/${page}`,
     );
     console.log(res);
     return res;
@@ -90,10 +103,29 @@ const getProductDetails = async () => {
   }
 };
 
+const addReview = async ({id, comment, rating}) => {
+  try {
+    const res = await axiosInstance.post(`/api/v1/product/review/add`, {
+      rating,
+      comment,
+      productId: id,
+      date: new Date().toLocaleDateString(),
+    });
+    return res;
+  } catch (error) {
+    console.log(error);
+    console.log(error.response);
+    console.error(error.response?.data?.message || 'Fail to Add Review');
+    throw new Error(error.response?.data?.message || 'Fail to Add Review');
+  }
+};
+
 export {
   getAllProducts,
   getAllCategory,
   getAllBanners,
   getVideos,
   getProductDetails,
+  getReviews,
+  addReview,
 };

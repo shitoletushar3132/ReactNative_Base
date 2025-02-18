@@ -11,17 +11,17 @@ const CategoryCard = ({category}) => {
         navigation.navigate('CategoryFilter', {category: category?.name})
       }
       className="flex-row mx-1 rounded-lg my-1"
-      style={{flex: 1, height: 140}}>
+      style={{flex: 1, height: 100}}>
       {/* Increased height */}
-      <View className="w-28 bg-white rounded-lg shadow-lg p-2 items-center">
+      <View className="w-24 bg-white rounded-lg shadow-md  items-center">
         <Image
           source={{
             uri: `${ImageUri}/${category?.image}`,
           }}
-          className="w-full h-24 rounded-lg" // Adjusted height
+          className="w-full h-20 rounded-lg" // Adjusted height
           resizeMode="contain"
         />
-        <Text className="mt-2 text-center font-medium text-black">
+        <Text className="text-center text-xs font-medium text-black">
           {category?.name}
         </Text>
       </View>

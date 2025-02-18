@@ -5,6 +5,7 @@ import AuthNavigation from './src/navigation/AuthNavigation';
 import {AppProvider} from './src/contextProvider/AppContext';
 import HomeNavigation from './src/navigation/HomeNavigation';
 import {navigationRef} from './src/navigation/NavigationService';
+import Toast from 'react-native-toast-message';
 
 const Stack = createStackNavigator();
 
@@ -14,6 +15,7 @@ const App = () => {
       <NavigationContainer ref={navigationRef}>
         {/* <AuthNavigation /> */}
         <HomeNavigation />
+        <Toast />
       </NavigationContainer>
     </AppProvider>
   );

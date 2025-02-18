@@ -24,10 +24,6 @@ const Header = () => {
         )}
 
         <View className="flex-row gap-x-4 items-center">
-          <View>
-            <Fontisto name="bell" size={28} color={'#fff'} />
-          </View>
-
           {user ? (
             <>
               {user.image ? (

@@ -12,19 +12,24 @@ import {
   Keyboard,
   ActivityIndicator,
   TouchableOpacity,
+  Button,
 } from 'react-native';
 import AuthInput from '../../components/auth/AuthInput';
 import AuthButton from '../../components/auth/AuthButton';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import {Snackbar, Avatar} from 'react-native-paper';
+import {Snackbar, Avatar, Portal, Dialog} from 'react-native-paper';
 import * as ImagePicker from 'react-native-image-picker';
 import {AppContext} from '../../contextProvider/AppContext';
 import {editProfile, editProfilePhoto} from '../../requests/auth/authRequest';
 import validateEditForm from '../../utils/Validation/auth/edit';
 import {ImageUri, SERVER} from '../../utils/constant';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import {useNavigation} from '@react-navigation/native';
+import {removeUser} from '../../Storage/removeLocalData';
 
-const EditProfile = ({navigation}) => {
-  const {user, setRefreshData} = useContext(AppContext);
+const EditProfile = () => {
+  const navigation = useNavigation();
+  const {user, setRefreshData, setUser} = useContext(AppContext);
   const [formData, setFormData] = useState({
     fullName: user?.fullName,
     email: user?.email,
@@ -38,6 +43,8 @@ const EditProfile = ({navigation}) => {
   const [imageEdit, setImageEdit] = useState(false);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackMessage, setSnackMessage] = useState('');
+
+  const [visible, setVisible] = React.useState(false);
 
   const handleInputChange = useCallback((field, value) => {
     setFormData(prev => ({...prev, [field]: value}));
@@ -95,8 +102,28 @@ const EditProfile = ({navigation}) => {
     setImageEdit(true);
   };
 
+  const showDialog = () => setVisible(true);
+
+  const hideDialog = () => setVisible(false);
+
+  const handlePermanentDelete = () => {
+    console.log('trigger');
+    setVisible(true);
+  };
+
+  const handleLogout = async () => {
+    try {
+      console.log('trigger');
+      await removeUser('accessToken'); // Remove token
+
+      setUser(null); // Clear user context
+      navigation.navigate('MainTabs'); // Navigate to Login screen after logout
+    } catch (error) {
+      console.error('Error during logout:', error); // Log any errors that occur during logout
+    }
+  };
+
   useEffect(() => {
-    console.log(``);
     if (user) {
       setFormData({
         fullName: user.fullName || '',
@@ -230,6 +257,13 @@ const EditProfile = ({navigation}) => {
                   bgColor="#DD5411"
                   textColor="#fff"
                 />
+
+                <TouchableOpacity
+                  className="flex-row items-center justify-center mt-7 border border-red-500 py-2 rounded-lg"
+                  onPress={() => handlePermanentDelete()}>
+                  <Text className="text-red-500">Permenant Account Delete</Text>
+                  <MaterialIcons name="delete" size={16} color={'#ff5757'} />
+                </TouchableOpacity>
               </View>
             </View>
 
@@ -243,6 +277,36 @@ const EditProfile = ({navigation}) => {
               style={{marginBottom: 10}}>
               <Text className="text-red-500">{snackMessage}</Text>
             </Snackbar>
+            <Portal>
+              <Dialog
+                visible={visible}
+                onDismiss={hideDialog}
+                style={{backgroundColor: 'white'}}>
+                <Dialog.Title>Alert</Dialog.Title>
+                <Dialog.Content>
+                  <Text variant="bodyMedium">
+                    Your account will be deleted within 90 days. Do you still
+                    want to delete the account?
+                  </Text>
+                </Dialog.Content>
+                <Dialog.Actions>
+                  <View className="flex-row gap-x-5">
+                    <TouchableOpacity onPress={() => hideDialog()}>
+                      <Text>Cancel</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      onPress={() => {
+                        hideDialog();
+                        handleLogout();
+                      }}
+                      className="border px-3 rounded-md border-red-500">
+                      <Text className="text-red-500">Delete</Text>
+                    </TouchableOpacity>
+                  </View>
+                </Dialog.Actions>
+              </Dialog>
+            </Portal>
           </ScrollView>
         </KeyboardAvoidingView>
       </TouchableWithoutFeedback>

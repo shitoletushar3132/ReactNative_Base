@@ -24,9 +24,10 @@ import {
   getVideos,
 } from '../../requests/products/getProducts';
 import {ActivityIndicator} from 'react-native-paper';
-import VideoCard from '../../components/home/CardTypes/VideoCard';
 import AutoScrollBanner from '../../components/home/CardTypes/AutoScrollBanner';
 import {useNavigation} from '@react-navigation/native';
+import Header from '../../components/home/Homepage/Header';
+import SearchBar from '../../components/home/SearchBar';
 
 const Home = () => {
   const {
@@ -81,7 +82,6 @@ const Home = () => {
   const fetchVideos = async () => {
     try {
       const data = await getVideos();
-      // const detail = await getProductDetails();
       setVideos(data.data.data);
     } catch (error) {
       console.error('Error fetching Videos:', error);
@@ -92,7 +92,6 @@ const Home = () => {
     fetchCategories();
     fetchProducts();
     fetchBanners();
-    fetchVideos();
   }, []);
 
   useEffect(() => {
@@ -118,8 +117,11 @@ const Home = () => {
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             className="flex-1">
             {/* Header Section */}
+            <View style={{position: 'sticky', top: 0, zIndex: 100}}>
+              {/* <MainHeader /> */}
+              <Header />
+            </View>
 
-            <MainHeader />
             {/* Main Content Section */}
 
             {loading ? (
@@ -133,6 +135,8 @@ const Home = () => {
             ) : (
               <>
                 <AutoScrollBanner banners={banners} />
+                <SearchBar />
+
                 <View className="">
                   {/* <HorizontalScrollView>
                   <ProductList products={banners} layout="horizontal" />
@@ -177,34 +181,22 @@ const Home = () => {
                     </View>
 
                     <View className="mt-3">
-                      {/* <HorizontalScrollView>
-                    <ProductList
-                      products={products.filter(product =>
-                        product.keyward.includes('Valuable Product'),
-                      )}
-                      // products={Pro}
-                      // layout="horizontalSecond"
-                    />
-                  </HorizontalScrollView> */}
+                      <HorizontalScrollView>
+                        <ProductList
+                          products={products.filter(product =>
+                            product.keyward.includes('Valuable Product'),
+                          )}
+                          // products={Pro}
+                          layout="horizontalSecond"
+                        />
+                      </HorizontalScrollView>
 
-                      <ProductList
+                      {/* <ProductList
                         products={products.filter(product =>
                           product.keyward.includes('Valuable Product'),
                         )}
                         layout="vertical"
-                      />
-                    </View>
-                  </View>
-
-                  <View className="py-4 px-5">
-                    <Text className="text-lg text-center font-bold">
-                      OUR VALUABLE CUSTOMER
-                    </Text>
-
-                    <View className="items-center">
-                      {videos.map(video => (
-                        <VideoCard video={video} key={video._id} />
-                      ))}
+                      /> */}
                     </View>
                   </View>
                 </View>
